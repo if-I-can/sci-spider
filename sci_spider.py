@@ -130,6 +130,33 @@ def download(url: str, headers: dict, proxies: dict = None, num_retries: int = 2
         return None
 
 
+# def download_pdf(result: Dict, headers: dict, dir: str, proxies: dict = None,
+#                  num_retries: int = 2, doi: str = None) -> bool:
+#     """下载PDF文件"""
+#     url = result['onclick']
+#     if not urlparse(url).scheme:
+#         url = f'https:{url}'
+#     url = url.replace('\\', '')
+#
+#     print(f'正在下载文件: {url}')
+#     try:
+#         response = requests.get(url, headers=headers, proxies=proxies, verify=False)
+#         if response.status_code >= 400:
+#             if num_retries and 500 <= response.status_code < 600:
+#                 return download_pdf(result, headers, dir, proxies, num_retries - 1, doi)
+#             print(f'文件下载失败，状态码: {response.status_code}')
+#             return False
+#
+#         filename = get_valid_filename(result['title'] if len(result['title']) >= 5 else doi) + '.pdf'
+#         path = os.path.join(dir, filename)
+#
+#         with open(path, 'wb') as fp:
+#             fp.write(response.content)
+#         print(f'文件已保存: {path}')
+#         return True
+#     except requests.exceptions.RequestException as e:
+#         print(f'文件下载错误: {e}')
+#         return False
 def download_pdf(result: Dict, headers: dict, dir: str, proxies: dict = None,
                  num_retries: int = 2, doi: str = None) -> bool:
     """下载PDF文件"""
@@ -147,7 +174,8 @@ def download_pdf(result: Dict, headers: dict, dir: str, proxies: dict = None,
             print(f'文件下载失败，状态码: {response.status_code}')
             return False
 
-        filename = get_valid_filename(result['title'] if len(result['title']) >= 5 else doi) + '.pdf'
+        # 使用 DOI 作为文件名
+        filename = get_valid_filename(doi) + '.pdf'  # 使用 DOI 而不是 title
         path = os.path.join(dir, filename)
 
         with open(path, 'wb') as fp:
@@ -157,7 +185,6 @@ def download_pdf(result: Dict, headers: dict, dir: str, proxies: dict = None,
     except requests.exceptions.RequestException as e:
         print(f'文件下载错误: {e}')
         return False
-
 
 # ================ Crossref API ================
 def get_dois_from_crossref(keyword: str, rows: int = 100) -> list:
